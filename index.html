@@ -1,12 +1,12 @@
  <!DOCTYPE html>
 <html>
 <head>
-  <title>WalletConnect Test</title>
   <meta charset="UTF-8">
+  <title>Connect Wallet</title>
   <style>
-    body { font-family: Arial; max-width: 600px; margin: 0 auto; padding: 20px; }
-    button { background: #4CAF50; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; }
-    #status { padding: 10px; margin-top: 20px; border-radius: 5px; }
+    body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
+    button { padding: 12px 20px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    #status { margin-top: 20px; padding: 10px; border-radius: 6px; }
     .connected { background: #dfd; color: #070; }
     .error { background: #fdd; color: #700; }
   </style>
@@ -17,20 +17,20 @@
 
   <!-- Ethers.js -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
-
-  <!-- WalletConnect Web3Modal v2 -->
+  
+  <!-- WalletConnect Web3Modal -->
   <script src="https://unpkg.com/@walletconnect/web3modal@2.6.2/dist/index.umd.js"></script>
 
   <script>
-    const { EthereumProvider, Web3Modal } = window.WalletConnectWeb3Modal;
+    const { Web3Modal } = window.WalletConnectWeb3Modal;
 
-    const projectId = "YOUR_WALLETCONNECT_PROJECT_ID"; // Replace this with your real projectId from https://cloud.walletconnect.com
+    const projectId = "ff2db6544a529027450c74a34fc4fb74";
 
     const metadata = {
-      name: "My DApp",
-      description: "Connect wallet demo",
-      url: "https://yourwebsite.com",
-      icons: ["https://yourwebsite.com/icon.png"]
+      name: "FPVTOKEN DApp",
+      description: "Connect Wallet to interact",
+      url: "https://ebray783.github.io",
+      icons: ["https://ebray783.github.io/icon.png"]
     };
 
     const web3Modal = new Web3Modal({
@@ -39,10 +39,10 @@
       themeMode: "light"
     });
 
-    const status = document.getElementById('status');
-    const connectButton = document.getElementById('connect');
+    const status = document.getElementById("status");
+    const connectBtn = document.getElementById("connect");
 
-    connectButton.addEventListener('click', async () => {
+    connectBtn.addEventListener("click", async () => {
       try {
         status.textContent = "🔄 Connecting...";
         status.className = "";
@@ -52,12 +52,12 @@
         const signer = await ethersProvider.getSigner();
         const address = await signer.getAddress();
 
-        status.textContent = `✅ Connected: ${address.slice(0, 6)}...${address.slice(-4)}`;
+        status.textContent = `✅ Connected: ${address.slice(0,6)}...${address.slice(-4)}`;
         status.className = "connected";
-      } catch (error) {
-        status.textContent = `🔴 Error: ${error.message}`;
+      } catch (err) {
+        status.textContent = `🔴 Error: ${err.message}`;
         status.className = "error";
-        console.error("Wallet connection error:", error);
+        console.error(err);
       }
     });
   </script>
