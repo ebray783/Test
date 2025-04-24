@@ -1,21 +1,18 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <title>WalletConnect Test</title>
   <meta charset="UTF-8">
-  <script>
-    // WalletConnect v2.7.0 (full minified)
-    !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).WalletConnectEthereumProvider={})}(this,(function(e){"use strict";/*...*/}));
-    
-    // Ethers.js v6.7.0 (full minified)
-    !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).ethers={})}(this,(function(e){"use strict";/*...*/}));
-  </script>
+  <!-- Load WalletConnect from working CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@1.8.0/dist/umd/index.min.js"></script>
+  <!-- Load Ethers.js -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
 </head>
 <body>
-  <button id="connect" style="padding:12px;background:#4CAF50;color:white;border:none;border-radius:8px;">
+  <button id="connect" style="padding:12px;background:#4CAF50;color:white;border:none;border-radius:8px;cursor:pointer;">
     Connect Wallet
   </button>
-  <div id="status" style="margin-top:20px;">🔴 Disconnected</div>
+  <div id="status" style="margin-top:20px;padding:10px;">🔴 Disconnected</div>
 
   <script>
     document.getElementById('connect').addEventListener('click', async () => {
@@ -23,15 +20,21 @@
       status.textContent = "🔄 Connecting...";
       
       try {
-        const provider = new WalletConnectEthereumProvider.default({
-          projectId: "YOUR_PROJECT_ID", // REPLACE THIS
-          chains: [56], // BSC Mainnet
-          showQrModal: true
+        // Initialize with v1.8.0 (working version)
+        const provider = new window.WalletConnectEthereumProvider.default({
+          rpc: {
+            56: "https://bsc-dataseed.binance.org/" // BSC Mainnet
+          },
+          bridge: "https://bridge.walletconnect.org",
+          qrcodeModalOptions: {
+            mobileLinks: ["metamask", "trust"]
+          }
         });
 
         await provider.enable();
-        const ethersProvider = new ethers.BrowserProvider(provider);
-        const address = await ethersProvider.getSigner().getAddress();
+        const web3Provider = new ethers.BrowserProvider(provider);
+        const signer = await web3Provider.getSigner();
+        const address = await signer.getAddress();
         
         status.textContent = `✅ Connected: ${address.slice(0,6)}...${address.slice(-4)}`;
         status.style.background = "#dfd";
@@ -39,6 +42,7 @@
       } catch (error) {
         status.textContent = `🔴 Error: ${error.message}`;
         status.style.background = "#fdd";
+        console.error(error);
       }
     });
   </script>
