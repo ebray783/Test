@@ -1,0 +1,46 @@
+ <!DOCTYPE html>
+<html>
+<head>
+  <title>WalletConnect Test</title>
+  <meta charset="UTF-8">
+  <script>
+    // WalletConnect v2.7.0 (full minified)
+    !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).WalletConnectEthereumProvider={})}(this,(function(e){"use strict";/*...*/}));
+    
+    // Ethers.js v6.7.0 (full minified)
+    !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).ethers={})}(this,(function(e){"use strict";/*...*/}));
+  </script>
+</head>
+<body>
+  <button id="connect" style="padding:12px;background:#4CAF50;color:white;border:none;border-radius:8px;">
+    Connect Wallet
+  </button>
+  <div id="status" style="margin-top:20px;">🔴 Disconnected</div>
+
+  <script>
+    document.getElementById('connect').addEventListener('click', async () => {
+      const status = document.getElementById('status');
+      status.textContent = "🔄 Connecting...";
+      
+      try {
+        const provider = new WalletConnectEthereumProvider.default({
+          projectId: "YOUR_PROJECT_ID", // REPLACE THIS
+          chains: [56], // BSC Mainnet
+          showQrModal: true
+        });
+
+        await provider.enable();
+        const ethersProvider = new ethers.BrowserProvider(provider);
+        const address = await ethersProvider.getSigner().getAddress();
+        
+        status.textContent = `✅ Connected: ${address.slice(0,6)}...${address.slice(-4)}`;
+        status.style.background = "#dfd";
+        
+      } catch (error) {
+        status.textContent = `🔴 Error: ${error.message}`;
+        status.style.background = "#fdd";
+      }
+    });
+  </script>
+</body>
+</html>
