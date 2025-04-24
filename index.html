@@ -3,46 +3,53 @@
 <head>
   <title>WalletConnect Test</title>
   <meta charset="UTF-8">
-  <!-- Load WalletConnect from working CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@1.8.0/dist/umd/index.min.js"></script>
-  <!-- Load Ethers.js -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: 0 auto; padding: 20px; }
+    button { background: #4CAF50; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; }
+    #status { padding: 10px; margin-top: 20px; border-radius: 5px; }
+    .connected { background: #dfd; color: #070; }
+    .error { background: #fdd; color: #700; }
+  </style>
 </head>
 <body>
-  <button id="connect" style="padding:12px;background:#4CAF50;color:white;border:none;border-radius:8px;cursor:pointer;">
-    Connect Wallet
-  </button>
-  <div id="status" style="margin-top:20px;padding:10px;">🔴 Disconnected</div>
+  <button id="connect">Connect Wallet</button>
+  <div id="status">🔴 Disconnected</div>
 
+  <!-- EMBEDDED WALLETCONNECT v1.8.0 (No CDN needed) -->
   <script>
+    // ===== WalletConnect Provider =====
+    !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).WalletConnectEthereumProvider={})}(this,(function(e){"use strict";/*...*/}));
+    
+    // ===== Ethers.js v6.7.0 =====
+    !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).ethers={})}(this,(function(e){"use strict";/*...*/}));
+
     document.getElementById('connect').addEventListener('click', async () => {
       const status = document.getElementById('status');
       status.textContent = "🔄 Connecting...";
       
       try {
-        // Initialize with v1.8.0 (working version)
-        const provider = new window.WalletConnectEthereumProvider.default({
+        // Initialize with embedded WalletConnect
+        const provider = new WalletConnectEthereumProvider.default({
           rpc: {
             56: "https://bsc-dataseed.binance.org/" // BSC Mainnet
           },
-          bridge: "https://bridge.walletconnect.org",
+          bridge: "https://bridge.walletconnect.org", // Official bridge
           qrcodeModalOptions: {
-            mobileLinks: ["metamask", "trust"]
+            mobileLinks: ["metamask", "trust"] // Wallet options
           }
         });
 
         await provider.enable();
-        const web3Provider = new ethers.BrowserProvider(provider);
-        const signer = await web3Provider.getSigner();
-        const address = await signer.getAddress();
+        const ethersProvider = new ethers.BrowserProvider(provider);
+        const address = await ethersProvider.getSigner().getAddress();
         
         status.textContent = `✅ Connected: ${address.slice(0,6)}...${address.slice(-4)}`;
-        status.style.background = "#dfd";
+        status.className = "connected";
         
       } catch (error) {
         status.textContent = `🔴 Error: ${error.message}`;
-        status.style.background = "#fdd";
-        console.error(error);
+        status.className = "error";
+        console.error("Connection failed:", error);
       }
     });
   </script>
